@@ -6,5 +6,7 @@ GroupChats is a bot that greats private channels in a Discord server, the owner 
 
 Information: This bot is written in eris. You'll need to install node.js to run it. This bot not hosted anywhere, you will have to host it yourself. For starter users you can use things like glitch.com
 
+Default prefix is ! this can be changed in .env
+
 Command Example
 `!gc [name]`
