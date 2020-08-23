@@ -18,3 +18,5 @@ Command Example
 `!gc [name]`
 
 If you need more help with this, join my [Discord](https://discord.gg/HpxY6kh)
+
+*ps. i'm aware this isn't written is the best way, but. yea*
