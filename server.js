@@ -15,26 +15,29 @@ bot.on('messageCreate', (msg) => {
     if (msg.content.toLowerCase().startsWith(prefix+'gc')){
         if (args[1] === undefined){
             const getName = msg.author.username
-            let cid = bot.createChannel(msg.guildID,getName,4).then(async (cid) => {
-            let chat = await bot.createChannel(msg.guildID,'chat',0)
-            let vc = await bot.createChannel(msg.guildID,'Voice',2)
+          let cid = bot.createChannel(msg.guildID,getName,4).then(async (cid) => {
+          let chat = await bot.createChannel(msg.guildID,'chat',0)
+          let vc = await bot.createChannel(msg.guildID,'Voice',2)
             await chat.edit({ parentID: cid.id, topic: msg.author.id}),
             await vc.edit({ parentID: cid.id, topic: msg.author.id}),
             await cid.editPermission(msg.author.id,'117760','0','member','GC Owner'),
             await cid.editPermission(msg.guildID,'0','117760','role','GC')
             await bot.createMessage('744941930475028571','GC Created: '+getName+' Channel ID: '+chat.id)
-        })}
+        })
+      }
         else if (args[1] !== undefined){
         const getName = msg.content.slice(prefix.length+args[0].length).trim()
         let cid = bot.createChannel(msg.guildID,getName,4).then(async (cid) => {
         let chat = await bot.createChannel(msg.guildID,'chat',0)
         let vc = await bot.createChannel(msg.guildID,'Voice',2)
-        await chat.edit({ parentID: cid.id, topic: msg.author.id}),
-        await vc.edit({ parentID: cid.id, topic: msg.author.id}),
-        await cid.editPermission(msg.author.id,'117760','0','member','GC Owner'),
-        await cid.editPermission(msg.guildID,'0','117760','role','GC')
-        await bot.createMessage('744941930475028571','GC Created: '+getName+' Channel ID: '+chat.id)
-    })}}
+          await chat.edit({ parentID: cid.id, topic: msg.author.id}),
+          await vc.edit({ parentID: cid.id, topic: msg.author.id}),
+          await cid.editPermission(msg.author.id,'117760','0','member','GC Owner'),
+          await cid.editPermission(msg.guildID,'0','117760','role','GC')
+          await bot.createMessage('744941930475028571','GC Created: '+getName+' Channel ID: '+chat.id)
+    })
+  }
+}
 
     if (msg.content.toLowerCase().startsWith(prefix+'delete')){
         if (msg.channel.parentID === env.ignore) return;
