@@ -1,5 +1,7 @@
 # GroupChats
 
+### This bot will be redone early 2021
+
 GroupChats is an open-source bot for anyone to run. Configure your bot in the .env file. 
 
 GroupChats is a bot that greats private channels in a Discord server, the owner of the group chat can add and remove users from the channels, and also delete the group chat.
