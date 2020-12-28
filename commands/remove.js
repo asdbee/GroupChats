@@ -4,8 +4,8 @@ function getGC(id){
     return gc.gcCache.find((g) => g.mainChat === id)
 }
 module.exports = {
-    name: '',
-    usage: '{prefix}',
+    name: 'remove',
+    usage: '{prefix}remove',
     execute(bot,msg,args){
     if (msg.channel.parentID === config.ignoredCatagory) return;
     if (getGC(msg.channel.id) === undefined) return bot.createMessage(msg.channel.id,'`X` There is no GroupChat in this channel.')
