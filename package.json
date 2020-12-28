@@ -1,0 +1,20 @@
+{
+  "name": "groupchats",
+  "version": "1.0.0",
+  "description": "GroupChats is an open-source bot for anyone to run. Configure your bot in the .env file.",
+  "main": "server.js",
+  "dependencies": {
+    "eris": "^0.14.0",
+    "mongoose": "^5.11.8"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/asdbee/GroupChats/issues"
+  },
+  "homepage": "https://github.com/asdbee/GroupChats#readme"
+}

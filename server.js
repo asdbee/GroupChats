@@ -1,79 +1,68 @@
 const Eris = require('eris');
-const env = require('dotenv').config({path: __dirname + '/.env'})
+const fs = require('fs')
+const config = require('./config.js')
+const db = require('./database/connectDB.js')
+const gc = require('./gc.js').get
 
-const bot = new Eris(process.env.token);
-const prefix = process.env.prefix
+const bot = new Eris(config.token);
+const prefix = config.prefix
+bot.commands = new Eris.Collection();
 
-bot.on('ready',(bot) => {
-    console.log('Ready')
+const gcCache = gc.gcCache
+
+module.exports = {}
+
+bot.on('ready', () => {
+    console.log('Bot updated successfully')
+    gc.allGCInfo().then((data) => {
+      data.forEach((g) => gcCache.push({mainChat: g.chatID, category: g.categoryID, ownerID: g.ownerID}))
+    })
+    bot.editStatus('online', { name: 'group chats', type: 3})
+    const commandFiles = fs.readdirSync(__dirname + '/commands').filter(file => file.endsWith('.js'));
+    for (const file of commandFiles) {
+	    const command = require(__dirname + `/commands/${file}`)
+        bot.commands.set(command.name, command)
+    }
+})
+
+bot.on('channelDelete', (channel) => {
+  const db = require('./database/template.js')
+  if (channel.type === 4){
+  db.findOne({categoryID: channel.id}).then((data) => {
+    if (data === null) return
+    data.delete()
+  })
+  }
+
+  if (channel.type === 2){
+    db.findOne({categoryID: channel.parentID}).then((data) => {
+      if (data === null) return
+      data.delete()
+    })
+  }
+
+  if (channel.type === 0){
+    db.findOne({chatID: channel.id}).then((data) => {
+      if (data === null) return
+      data.delete()
+    })
+  }
+
 })
 
 bot.on('messageCreate', (msg) => {
     if (msg.author.bot) return;
     const args = msg.content.slice(prefix.length).trim().split(' ')
+    if (!msg.content.startsWith(prefix)) return;
+    const cmd = args[0]
+    if (!bot.commands.has(cmd)) return
 
-    if (msg.content.toLowerCase().startsWith(prefix+'gc')){
-        if (args[1] === undefined){
-            const getName = msg.author.username
-          let cid = bot.createChannel(msg.guildID,getName,4).then(async (cid) => {
-          let chat = await bot.createChannel(msg.guildID,'chat',0)
-          let vc = await bot.createChannel(msg.guildID,'Voice',2)
-            await chat.edit({ parentID: cid.id, topic: msg.author.id}),
-            await vc.edit({ parentID: cid.id, topic: msg.author.id}),
-            await cid.editPermission(msg.author.id,'117760','0','member','GC Owner'),
-            await cid.editPermission(msg.guildID,'0','117760','role','GC')
-            await bot.createMessage('744941930475028571','GC Created: '+getName+' Channel ID: '+chat.id)
-        })
-      }
-        else if (args[1] !== undefined){
-        const getName = msg.content.slice(prefix.length+args[0].length).trim()
-        let cid = bot.createChannel(msg.guildID,getName,4).then(async (cid) => {
-        let chat = await bot.createChannel(msg.guildID,'chat',0)
-        let vc = await bot.createChannel(msg.guildID,'Voice',2)
-          await chat.edit({ parentID: cid.id, topic: msg.author.id}),
-          await vc.edit({ parentID: cid.id, topic: msg.author.id}),
-          await cid.editPermission(msg.author.id,'117760','0','member','GC Owner'),
-          await cid.editPermission(msg.guildID,'0','117760','role','GC')
-          await bot.createMessage('744941930475028571','GC Created: '+getName+' Channel ID: '+chat.id)
-    })
-  }
-}
-
-    if (msg.content.toLowerCase().startsWith(prefix+'delete')){
-        if (msg.channel.parentID === env.ignore) return;
-        if (msg.channel.topic === msg.author.id){
-            const brotherChannels = msg.channel.guild.channels.filter((c) => c.parentID === msg.channel.parentID)
-            Promise.all(brotherChannels.map((c) => c.delete()))
-              .then(() => {
-                bot.getChannel(msg.channel.parentID).delete()
-                bot.createMessage('744941930475028571',msg.author.username+' deleted '+bot.getChannel(msg.channel.parentID).name)
-            }).catch((err) => {
-                bot.createMessage('744941930475028571','Error Deleting GC: '+err)
-      })
-        }
+    try {
+      bot.commands.get(cmd).execute(bot,msg,args)
     }
-
-    if (msg.content.toLowerCase().startsWith(prefix+'add')){
-        if (msg.channel.parentID === env.ignore) return;
-        const user = (args[1].replace(/[\\<>@#&!]/g, ""))
-        const brotherChannels = msg.channel.guild.channels.filter((c) => c.parentID === msg.channel.parentID)
-        Promise.all(brotherChannels.map((c) => c.editPermission(user,'117760','0','member','Added')))
-          .then(() => {
-            bot.createMessage(msg.channel.id,msg.author.username+' added <@'+user+'>')
-          })
-    }
-
-    if (msg.content.toLowerCase().startsWith(prefix+'remove')){
-        if (msg.channel.parentID === env.ignore) return;
-        const user = (args[1].replace(/[\\<>@#&!]/g, ""))
-        if (msg.channel.guild.members.get(user).voiceState.channelID !== null){
-            msg.channel.guild.members.get(user).edit({channelID: null})
-        }
-        const brotherChannels = msg.channel.guild.channels.filter((c) => c.parentID === msg.channel.parentID)
-        Promise.all(brotherChannels.map((c) => c.editPermission(user,'0','117760','member','Added')))
-          .then(() => {
-            bot.createMessage(msg.channel.id,msg.author.username+' removed <@'+user+'>')
-          })
+    catch (error) {
+      console.error(error)
+      bot.createMessage(msg.channel.id,'Unable to execute command.')
     }
 })
 
