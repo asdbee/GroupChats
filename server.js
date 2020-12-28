@@ -25,6 +25,31 @@ bot.on('ready', () => {
     }
 })
 
+bot.on('channelDelete', (channel) => {
+  const db = require('./database/template.js')
+  if (channel.type === 4){
+  db.findOne({categoryID: channel.id}).then((data) => {
+    if (data === null) return
+    data.delete()
+  })
+  }
+
+  if (channel.type === 2){
+    db.findOne({categoryID: channel.parentID}).then((data) => {
+      if (data === null) return
+      data.delete()
+    })
+  }
+
+  if (channel.type === 0){
+    db.findOne({chatID: channel.id}).then((data) => {
+      if (data === null) return
+      data.delete()
+    })
+  }
+
+})
+
 bot.on('messageCreate', (msg) => {
     if (msg.author.bot) return;
     const args = msg.content.slice(prefix.length).trim().split(' ')
