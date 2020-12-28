@@ -14,7 +14,7 @@ get.createGC = (category,main,owner) => {
     try {
         const gc = require('./database/template.js')
         const newGc = new gc ({
-            _id: category,
+            _id: main,
             chatID: main,
             categoryID: category,
             ownerID: owner
@@ -28,5 +28,7 @@ get.createGC = (category,main,owner) => {
         return false
     }
 }
+
+get.gcCache = [ { mainChat: '', category: '', ownerID: '' } ]
 
 module.exports = { get }
