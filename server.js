@@ -1,7 +1,7 @@
 const Eris = require('eris');
-const fs = require('fs')
-const config = require('./config.js')
-const db = require('./database/connectDB.js')
+const fs = require('fs');
+const config = require('./config.js');
+const db = require('./database/connectDB.js');
 const gc = require('./gc.js').get
 
 const bot = new Eris(config.token);
