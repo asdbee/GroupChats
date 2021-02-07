@@ -1,6 +1,6 @@
 module.exports = {
-    token: '',
-    databaseToken: '',
-    prefix: '!',
-    ignoredCatagory: ''
-}
+  token: '',
+  databaseToken: '',
+  prefix: '!',
+  ignoredCatagory: '',
+};

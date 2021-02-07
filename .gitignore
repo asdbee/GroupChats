@@ -849,3 +849,4 @@ node_modules/@types/bson/index.d.ts
 node_modules/.bin/semver.ps1
 node_modules/.bin/semver.cmd
 node_modules/.bin/semver
+.prettierrc
