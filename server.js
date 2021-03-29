@@ -1,7 +1,6 @@
 const Eris = require('eris');
 const fs = require('fs');
 const config = require('./config.js');
-const db = require('./database/connectDB.js');
 const gc = require('./gc.js').get;
 
 const bot = new Eris(config.token);
@@ -9,8 +8,7 @@ const prefix = config.prefix;
 bot.commands = new Eris.Collection();
 
 const gcCache = gc.gcCache;
-
-module.exports = {};
+require('./database/connectDB.js');
 
 bot.on('ready', () => {
   console.log('Bot updated successfully');
